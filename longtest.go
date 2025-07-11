@@ -15,7 +15,6 @@ func main() {
 	switch kind {
 	case "WRITE":
 		writeTest()
-		break
 	}
 }
 
@@ -175,6 +174,18 @@ func writeTest() {
 				Headers:    headers,
 			})
 			pqt.Run()
+		}
+		if strings.Contains(os.Getenv("MODE"), "J") {
+			fmt.Println("Run plain text lines test")
+			plainText := NewPlainTextSender(LogSenderOpts{
+				ID:         "plain-text",
+				Containers: names,
+				Lines:      logs,
+				LinesPS:    3000,
+				URL:        os.Getenv("URL"),
+				Headers:    headers,
+			})
+			plainText.Run()
 		}
 	}
 	t := time.NewTicker(time.Second)

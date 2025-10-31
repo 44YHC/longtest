@@ -28,6 +28,7 @@ func writeTest() {
 	}
 	useDrilldown := os.Getenv("DRILLDOWN")
 	dsn := os.Getenv("DSN")
+	extraHeaders := os.Getenv("EXTRA_HEADERS")
 	for _, oid := range oids {
 		names := generateNames(5)
 		headers := map[string]string{}
@@ -44,6 +45,18 @@ func writeTest() {
 			headers["X-Drilldown"] = "0"
 		default:
 			headers["X-Drilldown"] = "0"
+		if extraHeaders != "" {
+			headerPairs := strings.Split(extraHeaders, ";")
+			for _, pair := range headerPairs {
+				kv := strings.SplitN(pair, ":", 2)
+				if len(kv) == 2 {
+					key := strings.TrimSpace(kv[0])
+					value := strings.TrimSpace(kv[1])
+					if key != "" {
+						headers[key] = value
+					}
+				}
+			}
 		}
 		if strings.Contains(os.Getenv("MODE"), "L") {
 			fmt.Println("Run json logs test")

@@ -15,7 +15,6 @@ func main() {
 	switch kind {
 	case "WRITE":
 		writeTest()
-		break
 	}
 }
 
@@ -27,10 +26,11 @@ func writeTest() {
 	if os.Getenv("ORG_ID") != "" {
 		oids = strings.Split(os.Getenv("ORG_ID"), ",")
 	}
+	useDrilldown := os.Getenv("DRILLDOWN")
 	dsn := os.Getenv("DSN")
 	extraHeaders := os.Getenv("EXTRA_HEADERS")
 	for _, oid := range oids {
-		names := generateNames(3300)
+		names := generateNames(5)
 		headers := map[string]string{}
 		if oid != "" {
 			headers["X-Scope-OrgID"] = oid
@@ -50,6 +50,14 @@ func writeTest() {
 					}
 				}
 			}
+		switch useDrilldown {
+		case "1", "true", "TRUE", "True":
+			headers["X-Drilldown"] = "1"
+		case "0", "false", "FALSE", "False":
+			headers["X-Drilldown"] = "0"
+		default:
+			headers["X-Drilldown"] = "0"
+
 		}
 		if strings.Contains(os.Getenv("MODE"), "L") {
 			fmt.Println("Run json logs test")
@@ -57,7 +65,7 @@ func writeTest() {
 				ID:         "logs",
 				Containers: names,
 				Lines:      logs,
-				LinesPS:    3000,
+				LinesPS:    1000,
 				URL:        os.Getenv("URL"),
 				Headers:    headers,
 			})
@@ -189,6 +197,18 @@ func writeTest() {
 				Headers:    headers,
 			})
 			pqt.Run()
+		}
+		if strings.Contains(os.Getenv("MODE"), "J") {
+			fmt.Println("Run plain text lines test")
+			plainText := NewPlainTextSender(LogSenderOpts{
+				ID:         "plain-text",
+				Containers: names,
+				Lines:      logs,
+				LinesPS:    3000,
+				URL:        os.Getenv("URL"),
+				Headers:    headers,
+			})
+			plainText.Run()
 		}
 	}
 	t := time.NewTicker(time.Second)

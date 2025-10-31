@@ -1,9 +1,11 @@
 # long test
 
 Long-term test generator for qryn endpoints.
-It sends 
+It sends
+
 - 3000 logs/sec
 - 3000 influx logs / sec
+- 3000 plain text logs / sec
 - 300 zipkin traces/sec
 - 300 datadog traces/sec with variable amount of spans
 - 9K of metrics / 15 sec
@@ -24,3 +26,4 @@ depending on the MODE until you stop it.
 - I - for influx logs
 - C - for a lot of small simultaneous loki log request to check batching
 - S - for servicegraph testing
+- J - for plant text logs
